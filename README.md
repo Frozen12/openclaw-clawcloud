@@ -10,6 +10,10 @@
   <img src="https://img.shields.io/docker/v/meshpotato/openclaw/latest?style=flat-square" alt="Docker Version">
 </p>
 
+<p align="center">
+  <code>docker.io/meshpotato/openclaw:latest</code>
+</p>
+
 ---
 
 ## 📋 Environment Variables
@@ -119,7 +123,14 @@ Images are built automatically when OpenClaw releases a new version.
 
 ---
 
-## 📦 Image Tags
+## 📦 Docker Image
+
+```
+docker.io/meshpotato/openclaw:latest
+docker.io/meshpotato/openclaw:2026.4.20
+```
+
+### Image Tags
 
 | Tag | Description |
 |-----|-------------|

@@ -5,24 +5,8 @@
 </p>
 
 <p align="center">
-  <strong>Personal AI Assistant Gateway</strong><br>
-  Deploy OpenClaw on ClawCloud with persistent storage support
+  <strong>Personal AI Assistant Gateway</strong>
 </p>
-
----
-
-## 🚀 Quick Start
-
-```bash
-docker run -d \
-  --name openclaw \
-  -p 18789:18789 \
-  -e OPENCLAW_GATEWAY_BIND=lan \
-  -e OPENCLAW_GATEWAY_TOKEN=your-secure-token \
-  -v openclaw-data:/data/openclaw \
-  meshpotato/openclaw:latest \
-  node openclaw.mjs gateway --allow-unconfigured
-```
 
 ---
 
@@ -30,30 +14,26 @@ docker run -d \
 
 ### Required
 
-| Variable | Example Value | Description |
-|----------|---------------|-------------|
-| `OPENCLAW_GATEWAY_TOKEN` | `your-secure-token-here` | Authentication token |
-| `OPENCLAW_STATE_DIR` | `/data/openclaw` | Persistent volume mount path |
+Copy and edit these:
+
+```
+OPENCLAW_GATEWAY_BIND=lan
+OPENCLAW_GATEWAY_TOKEN=your-secure-token
+OPENCLAW_STATE_DIR=/data/openclaw
+```
 
 ### Recommended
 
-| Variable | Default | Example Value | Description |
-|----------|---------|---------------|-------------|
-| `OPENCLAW_GATEWAY_BIND` | `loopback` | `lan` | Bind mode: `lan` (0.0.0.0) or `loopback` (127.0.0.1) |
-| `OPENCLAW_GATEWAY_PORT` | `18789` | `18789` | Gateway port |
-| `OPENCLAW_HOME` | `/home/node` | `/data/openclaw` | Home directory |
+```
+OPENCLAW_HOME=/data/openclaw
+OPENCLAW_GATEWAY_PORT=18789
+```
 
-### Build-time Variables (for reference)
+### Startup Command
 
-| Variable | Purpose |
-|----------|---------|
-| `OPENCLAW_IMAGE` | Use a remote image instead of building locally |
-| `OPENCLAW_DOCKER_APT_PACKAGES` | Install extra apt packages during build (space-separated) |
-| `OPENCLAW_EXTENSIONS` | Pre-install extension deps at build time (space-separated) |
-| `OPENCLAW_EXTRA_MOUNTS` | Extra host bind mounts (comma-separated `source:target[:opts]`) |
-| `OPENCLAW_HOME_VOLUME` | Persist `/home/node` in a named Docker volume |
-| `OPENCLAW_SANDBOX` | Opt in to sandbox bootstrap (`1`, `true`, `yes`, `on`) |
-| `OPENCLAW_DOCKER_SOCKET` | Override Docker socket path |
+```
+node openclaw.mjs gateway --allow-unconfigured
+```
 
 ---
 
@@ -61,6 +41,7 @@ docker run -d \
 
 ```
 Mount Point: /data/openclaw
+Size: 2GB+
 ```
 
 ### What Gets Stored
@@ -74,39 +55,48 @@ Mount Point: /data/openclaw
 | `extensions/` | Installed plugins |
 | `workspace/` | Agent workspace |
 
-### ClawCloud Volume Settings
+### Runtime Locations
 
-| Container Path | Volume Name | Size |
-|---------------|-------------|------|
-| `/data/openclaw` | `openclaw-data` | **2GB+** |
+| Type | Location |
+|------|----------|
+| **App Data** | `/app/` (in image) |
+| **User Data** | `/data/openclaw` (persistent volume) |
+| **pnpm store** | `$OPENCLAW_HOME/.local/share/pnpm` |
+| **npm cache** | `$OPENCLAW_HOME/.npm` |
+| **uv cache** | `$OPENCLAW_HOME/.cache/uv` |
+| **Playwright** | `/home/node/.cache/ms-playwright` |
 
 ---
 
 ## 🔍 Health Checks
 
-```bash
-# Liveness
-curl http://localhost:18789/healthz
-
-# Readiness
-curl http://localhost:18789/readyz
+```
+GET /healthz
+GET /readyz
 ```
 
 ---
 
-## ⚙️ ClawCloud Configuration
+## ⚙️ ClawCloud Setup
 
 ### Environment Variables
 
 ```
 OPENCLAW_GATEWAY_BIND=lan
-OPENCLAW_GATEWAY_TOKEN=<your-secure-token>
+OPENCLAW_GATEWAY_TOKEN=<your-token>
 OPENCLAW_STATE_DIR=/data/openclaw
+OPENCLAW_HOME=/data/openclaw
 ```
+
+### Volume
+
+| Container Path | Volume Name | Size |
+|---------------|-------------|------|
+| `/data/openclaw` | `openclaw-data` | **2GB+** |
 
 ### Startup Command
 
-```bash
+```
 node openclaw.mjs gateway --allow-unconfigured
 ```
 
@@ -114,75 +104,50 @@ node openclaw.mjs gateway --allow-unconfigured
 
 ## 🖥️ Initial Setup
 
-1. Open `http://<your-container>:18789/` in browser
-2. Enter your `OPENCLAW_GATEWAY_TOKEN`
-3. Complete the onboarding wizard:
-   - Add AI provider API key
-   - Configure messaging channels (optional)
+1. Open `http://<container>:18789/` in browser
+2. Enter `OPENCLAW_GATEWAY_TOKEN`
+3. Complete the onboarding wizard
 
 ---
 
 ## 📱 Supported Channels
 
-After deployment, configure channels:
-
-- **WhatsApp** - QR code login
-- **Telegram** - Bot token
-- **Discord** - Bot token
-- **Slack** - App credentials
-- **Matrix**, **Signal**, **iMessage**, and more...
+- WhatsApp, Telegram, Discord, Slack
+- Matrix, Signal, iMessage, and more...
 
 ---
 
 ## 🔧 Troubleshooting
 
-### Container Exits Immediately
+### Container Exits
 
-```bash
-# Check health
+```
 curl http://localhost:18789/healthz
-
-# Check logs
 docker logs openclaw
 ```
 
 ### Permission Denied
 
-- Ensure persistent volume is properly mounted
-- Run container as root (default in this image)
+- Image runs as root for ClawCloud compatibility
 
 ### Configuration Lost
 
-- Verify `OPENCLAW_STATE_DIR` is set correctly
+- Verify `OPENCLAW_STATE_DIR=/data/openclaw`
 - Check persistent volume is attached
-
----
-
-## 📚 Documentation
-
-- [OpenClaw Docs](https://docs.openclaw.ai)
-- [Getting Started](https://docs.openclaw.ai/getting-started)
-- [Configuration](https://docs.openclaw.ai/configuration)
-- [Channels](https://docs.openclaw.ai/channels)
 
 ---
 
 ## 🤖 CI/CD
 
-### Auto Deploy (Recommended)
+### Auto Deploy
 
 Images are built automatically when OpenClaw releases a new stable version.
-
-- Runs every 6 hours to check for new releases
-- Builds and pushes to DockerHub automatically
-- Creates a GitHub Release
 
 ### Manual Deploy
 
 1. Go to [Actions](https://github.com/Frozen12/openclaw-clawcloud/actions)
 2. Click "Deploy to DockerHub"
 3. Enter version (e.g., `2026.4.20`)
-4. Click "Run workflow"
 
 ---
 
@@ -191,23 +156,19 @@ Images are built automatically when OpenClaw releases a new stable version.
 | Tag | Description |
 |-----|-------------|
 | `latest` | Most recent build |
-| `2026.4.20` | Specific version (year.month.day) |
+| `2026.4.20` | Specific version |
 
 ---
 
-## ❓ FAQ
+## 📚 Documentation
 
-### Where are pnpm/uv caches stored?
-
-The image disables Node.js compile cache (`NODE_DISABLE_COMPILE_CACHE=1`) to stay within ClawCloud's 100MB ephemeral storage limit. All persistent data is stored in the mounted volume at `/data/openclaw`.
+- [OpenClaw Docs](https://docs.openclaw.ai)
+- [Getting Started](https://docs.openclaw.ai/getting-started)
+- [Configuration](https://docs.openclaw.ai/configuration)
 
 ---
 
 <p align="center">
-  <a href="https://github.com/openclaw/openclaw">
-    <img src="https://img.shields.io/badge/Source-OpenClaw-blue?style=flat-square">
-  </a>
-  <a href="https://discord.gg/openclaw">
-    <img src="https://img.shields.io/badge/Discord-Join-purple?style=flat-square">
-  </a>
+  <a href="https://github.com/openclaw/openclaw">Source</a>
+  <a href="https://discord.gg/openclaw">Discord</a>
 </p>

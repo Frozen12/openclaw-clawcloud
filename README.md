@@ -14,7 +14,6 @@
 ## 🚀 Quick Start
 
 ```bash
-# Pull and run
 docker run -d \
   --name openclaw \
   -p 18789:18789 \
@@ -44,11 +43,21 @@ docker run -d \
 | `OPENCLAW_GATEWAY_PORT` | `18789` | `18789` | Gateway port |
 | `OPENCLAW_HOME` | `/home/node` | `/data/openclaw` | Home directory |
 
+### Build-time Variables (for reference)
+
+| Variable | Purpose |
+|----------|---------|
+| `OPENCLAW_IMAGE` | Use a remote image instead of building locally |
+| `OPENCLAW_DOCKER_APT_PACKAGES` | Install extra apt packages during build (space-separated) |
+| `OPENCLAW_EXTENSIONS` | Pre-install extension deps at build time (space-separated) |
+| `OPENCLAW_EXTRA_MOUNTS` | Extra host bind mounts (comma-separated `source:target[:opts]`) |
+| `OPENCLAW_HOME_VOLUME` | Persist `/home/node` in a named Docker volume |
+| `OPENCLAW_SANDBOX` | Opt in to sandbox bootstrap (`1`, `true`, `yes`, `on`) |
+| `OPENCLAW_DOCKER_SOCKET` | Override Docker socket path |
+
 ---
 
 ## 💾 Persistent Storage
-
-Mount a persistent volume to preserve data across deployments.
 
 ```
 Mount Point: /data/openclaw
@@ -63,6 +72,13 @@ Mount Point: /data/openclaw
 | `credentials/` | Channel/provider credentials |
 | `media/` | Uploaded files |
 | `extensions/` | Installed plugins |
+| `workspace/` | Agent workspace |
+
+### ClawCloud Volume Settings
+
+| Container Path | Volume Name | Size |
+|---------------|-------------|------|
+| `/data/openclaw` | `openclaw-data` | **2GB+** |
 
 ---
 
@@ -80,19 +96,13 @@ curl http://localhost:18789/readyz
 
 ## ⚙️ ClawCloud Configuration
 
-### Environment Variables Setup
+### Environment Variables
 
 ```
 OPENCLAW_GATEWAY_BIND=lan
 OPENCLAW_GATEWAY_TOKEN=<your-secure-token>
 OPENCLAW_STATE_DIR=/data/openclaw
 ```
-
-### Volume Mounts
-
-| Container Path | Volume Name | Size |
-|---------------|-------------|------|
-| `/data/openclaw` | `openclaw-data` | 1GB+ |
 
 ### Startup Command
 
@@ -159,14 +169,9 @@ docker logs openclaw
 
 ## 🤖 CI/CD
 
-### Auto Deploy (Recommended)
+### Auto Deploy
 
-Push a tag to trigger automatic build:
-
-```bash
-git tag v2026.4.20
-git push origin v2026.4.20
-```
+This repo builds images automatically when OpenClaw releases a new stable version.
 
 ### Manual Deploy
 
@@ -182,8 +187,15 @@ git push origin v2026.4.20
 | Tag | Description |
 |-----|-------------|
 | `latest` | Most recent build |
-| `2026.4.20` | Specific version |
-| `2026.4` | Major.minor version |
+| `2026.4.20` | Specific version (year.month.day) |
+
+---
+
+## ❓ FAQ
+
+### Where are pnpm/uv caches stored?
+
+The image disables Node.js compile cache (`NODE_DISABLE_COMPILE_CACHE=1`) to stay within ClawCloud's 100MB ephemeral storage limit. All persistent data is stored in the mounted volume at `/data/openclaw`.
 
 ---
 

@@ -103,7 +103,7 @@ jobs:
 
             ## Deployment Guide
 
-            See [README.clawcloud.md](README.clawcloud.md)
+            See [README.md](README.md)
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

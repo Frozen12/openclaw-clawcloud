@@ -21,7 +21,6 @@
 ```
 OPENCLAW_GATEWAY_BIND=lan
 OPENCLAW_GATEWAY_TOKEN=your-secure-token
-OPENCLAW_STATE_DIR=/data/openclaw
 OPENCLAW_HOME=/data/openclaw
 OPENCLAW_GATEWAY_PORT=18789
 ```
@@ -105,7 +104,7 @@ curl http://localhost:18789/healthz
 
 ### Configuration Lost
 
-Verify `OPENCLAW_STATE_DIR=/data/openclaw` and persistent volume is attached.
+Verify `OPENCLAW_HOME=/data/openclaw` and persistent volume is attached.
 
 ---
 

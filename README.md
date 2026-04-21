@@ -135,6 +135,6 @@ Images are built automatically when OpenClaw releases a new version.
 ---
 
 <p align="center">
+  <a href="https://github.com/Frozen12/openclaw-clawcloud">DockerHub Image</a>
   <a href="https://github.com/openclaw/openclaw">Source</a>
-  <a href="https://discord.gg/openclaw">Discord</a>
 </p>

@@ -84,7 +84,7 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          labels: ${{ meta.outputs.labels }}
+          labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -94,7 +94,7 @@ jobs:
       - name: Create Release
         if: github.event_name == 'push'
         uses: softprops/action-gh-release@v2
-        with: |
+        with:
           body: |
             ## Docker Image
 

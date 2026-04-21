@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'OpenClaw version (e.g., v2026.4.20)'
+        description: 'OpenClaw version (e.g., 2026.4.20 or v2026.4.20)'
         required: true
         type: string
 
@@ -29,22 +29,31 @@ jobs:
       - name: Determine version
         id: version
         run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            TAG="${{ inputs.version }}"
-          else
-            TAG="${{ github.ref_name }}"
+          INPUT="${{ github.event.inputs.version }}"
+          if [[ -z "$INPUT" ]]; then
+            INPUT="${{ github.ref_name }}"
           fi
+          # Ensure "v" prefix
+          if [[ ! "$INPUT" =~ ^v ]]; then
+            TAG="v$INPUT"
+          else
+            TAG="$INPUT"
+          fi
+          VERSION="${TAG#v}"
           echo "tag=$TAG" >> $GITHUB_OUTPUT
-          echo "version=${TAG#v}" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Clone OpenClaw source
         run: |
-          git clone --depth 1 --branch ${{ steps.version.outputs.version }} \
-            https://github.com/openclaw/openclaw.git openclaw-source
+          git clone --depth 1 https://github.com/openclaw/openclaw.git openclaw-source
+          cd openclaw-source
+          git fetch --tags origin ${{ steps.version.outputs.tag }}
+          git checkout ${{ steps.version.outputs.tag }}
 
       - name: Copy custom Dockerfile
         run: |
           cp Dockerfile openclaw-source/Dockerfile
+          echo "Using ClawCloud-modified Dockerfile"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

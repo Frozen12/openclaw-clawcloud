@@ -1,0 +1,58 @@
+name: Check for New Releases
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  check-release:
+    runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.check.outputs.new_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check latest release
+        id: check
+        run: |
+          # Get latest release from upstream
+          RESPONSE=$(curl -s https://api.github.com/repos/openclaw/openclaw/releases/latest)
+          VERSION=$(echo "$RESPONSE" | jq -r '.tag_name')
+          CURRENT_VERSION=$(cat .latest-version 2>/dev/null || echo "")
+          
+          echo "Latest upstream: $VERSION"
+          echo "Current in repo: $CURRENT_VERSION"
+          
+          if [[ "$VERSION" != "$CURRENT_VERSION" && "$VERSION" != "null" ]]; then
+            echo "new_version=$VERSION" >> $GITHUB_OUTPUT
+            echo "$VERSION" > .latest-version
+            echo "New release found: $VERSION"
+          else
+            echo "No new release. Current: $CURRENT_VERSION"
+            echo "new_version=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit new version file
+        if: steps.check.outputs.new_version != ''
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .latest-version
+          git commit -m "chore: Update latest version to ${{ steps.check.outputs.new_version }}"
+          git push
+
+  trigger-build:
+    needs: check-release
+    if: needs.check-release.outputs.new_version != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger deploy workflow
+        run: |
+          curl -s -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/dockerhub-deploy.yml/dispatches \
+            -d '{"ref":"main","inputs":{"version":"${{ needs.check-release.outputs.new_version }}"}}'

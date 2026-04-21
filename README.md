@@ -169,9 +169,13 @@ docker logs openclaw
 
 ## 🤖 CI/CD
 
-### Auto Deploy
+### Auto Deploy (Recommended)
 
-This repo builds images automatically when OpenClaw releases a new stable version.
+Images are built automatically when OpenClaw releases a new stable version.
+
+- Runs every 6 hours to check for new releases
+- Builds and pushes to DockerHub automatically
+- Creates a GitHub Release
 
 ### Manual Deploy
 

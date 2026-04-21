@@ -199,6 +199,10 @@ RUN ln -sf /app/openclaw.mjs /usr/local/bin/openclaw \
 
 ENV NODE_ENV=production
 ENV NODE_DISABLE_COMPILE_CACHE=1
+ENV OPENCLAW_HOME=/data/openclaw
+
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Note: USER node commented out for ClawCloud compatibility
 # Run as root to access persistent volumes
@@ -206,4 +210,4 @@ ENV NODE_DISABLE_COMPILE_CACHE=1
 
 HEALTHCHECK --interval=3m --timeout=10s --start-period=15s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:18789/healthz').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
-CMD ["node", "openclaw.mjs", "gateway", "--allow-unconfigured"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

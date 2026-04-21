@@ -51,9 +51,10 @@ jobs:
           git fetch --tags origin ${{ steps.version.outputs.tag }}
           git checkout ${{ steps.version.outputs.tag }}
 
-      - name: Copy custom Dockerfile
+      - name: Copy custom files
         run: |
           cp Dockerfile openclaw-source/Dockerfile
+          cp docker-entrypoint.sh openclaw-source/docker-entrypoint.sh
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -83,7 +84,7 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          labels: ${{ steps.meta.outputs.labels }}
+          labels: ${{ meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -93,7 +94,7 @@ jobs:
       - name: Create Release
         if: github.event_name == 'push'
         uses: softprops/action-gh-release@v2
-        with:
+        with: |
           body: |
             ## Docker Image
 

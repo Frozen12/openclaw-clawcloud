@@ -12,19 +12,10 @@
 
 ## 📋 Environment Variables
 
-### Required
-
-Copy and edit these:
-
 ```
 OPENCLAW_GATEWAY_BIND=lan
 OPENCLAW_GATEWAY_TOKEN=your-secure-token
 OPENCLAW_STATE_DIR=/data/openclaw
-```
-
-### Recommended
-
-```
 OPENCLAW_HOME=/data/openclaw
 OPENCLAW_GATEWAY_PORT=18789
 ```
@@ -64,7 +55,6 @@ Size: 2GB+
 | **pnpm store** | `$OPENCLAW_HOME/.local/share/pnpm` |
 | **npm cache** | `$OPENCLAW_HOME/.npm` |
 | **uv cache** | `$OPENCLAW_HOME/.cache/uv` |
-| **Playwright** | `/home/node/.cache/ms-playwright` |
 
 ---
 
@@ -79,26 +69,9 @@ GET /readyz
 
 ## ⚙️ ClawCloud Setup
 
-### Environment Variables
-
-```
-OPENCLAW_GATEWAY_BIND=lan
-OPENCLAW_GATEWAY_TOKEN=<your-token>
-OPENCLAW_STATE_DIR=/data/openclaw
-OPENCLAW_HOME=/data/openclaw
-```
-
-### Volume
-
 | Container Path | Volume Name | Size |
 |---------------|-------------|------|
 | `/data/openclaw` | `openclaw-data` | **2GB+** |
-
-### Startup Command
-
-```
-node openclaw.mjs gateway --allow-unconfigured
-```
 
 ---
 
@@ -112,8 +85,7 @@ node openclaw.mjs gateway --allow-unconfigured
 
 ## 📱 Supported Channels
 
-- WhatsApp, Telegram, Discord, Slack
-- Matrix, Signal, iMessage, and more...
+WhatsApp, Telegram, Discord, Slack, Matrix, Signal, iMessage, and more...
 
 ---
 
@@ -123,17 +95,11 @@ node openclaw.mjs gateway --allow-unconfigured
 
 ```
 curl http://localhost:18789/healthz
-docker logs openclaw
 ```
-
-### Permission Denied
-
-- Image runs as root for ClawCloud compatibility
 
 ### Configuration Lost
 
-- Verify `OPENCLAW_STATE_DIR=/data/openclaw`
-- Check persistent volume is attached
+Verify `OPENCLAW_STATE_DIR=/data/openclaw` and persistent volume is attached.
 
 ---
 
@@ -141,7 +107,7 @@ docker logs openclaw
 
 ### Auto Deploy
 
-Images are built automatically when OpenClaw releases a new stable version.
+Images are built automatically when OpenClaw releases a new version.
 
 ### Manual Deploy
 

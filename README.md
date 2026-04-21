@@ -5,7 +5,9 @@
 </p>
 
 <p align="center">
-  <strong>Personal AI Assistant Gateway</strong>
+  <strong>Personal AI Assistant Gateway</strong><br>
+  <img src="https://img.shields.io/docker/pulls/meshpotato/openclaw?style=flat-square" alt="Docker Pulls">
+  <img src="https://img.shields.io/docker/v/meshpotato/openclaw/latest?style=flat-square" alt="Docker Version">
 </p>
 
 ---

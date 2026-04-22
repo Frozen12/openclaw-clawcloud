@@ -27,11 +27,21 @@ jobs:
 
           if [[ "$VERSION" != "$CURRENT_VERSION" && "$VERSION" != "null" ]]; then
             echo "new_version=$VERSION" >> $GITHUB_OUTPUT
+            echo "$VERSION" > .latest-version
             echo "New release found: $VERSION"
           else
             echo "No new release. Current: $CURRENT_VERSION"
             echo "new_version=" >> $GITHUB_OUTPUT
           fi
+
+      - name: Commit new version
+        if: steps.check.outputs.new_version != ''
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .latest-version
+          git commit -m "chore: Update latest version to ${{ steps.check.outputs.new_version }}" || true
+          git push || true
 
       - name: Trigger deploy workflow
         if: steps.check.outputs.new_version != ''

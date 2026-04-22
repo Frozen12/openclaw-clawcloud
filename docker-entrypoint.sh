@@ -20,5 +20,10 @@ for i in $(seq 1 $MAX_RETRIES); do
   sleep $WAIT_INTERVAL
 done
 
+echo "==> [entrypoint] Setting up cache directories..."
+mkdir -p "${VOLUME_PATH}/.local/share/pnpm"
+mkdir -p "${VOLUME_PATH}/.npm"
+mkdir -p "${VOLUME_PATH}/.cache/uv"
+
 echo "==> [entrypoint] Starting OpenClaw..."
 exec node openclaw.mjs gateway --allow-unconfigured

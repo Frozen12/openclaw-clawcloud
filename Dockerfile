@@ -211,9 +211,9 @@ RUN ln -sf /app/openclaw.mjs /usr/local/bin/openclaw \
 ENV NODE_ENV=production
 ENV NODE_DISABLE_COMPILE_CACHE=1
 ENV OPENCLAW_HOME=/data/openclaw
-ENV UV_CACHE_DIR=/data/openclaw/.cache/uv
-ENV npm_config_cache=/data/openclaw/.npm
-ENV PNPM_HOME=/data/openclaw/.local/share/pnpm
+ENV UV_CACHE_DIR=${OPENCLAW_HOME}/.cache/uv
+ENV npm_config_cache=${OPENCLAW_HOME}/.npm
+ENV PNPM_HOME=${OPENCLAW_HOME}/.local/share/pnpm
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh

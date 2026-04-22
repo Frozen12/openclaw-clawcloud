@@ -21,9 +21,9 @@ for i in $(seq 1 $MAX_RETRIES); do
 done
 
 echo "==> [entrypoint] Setting up cache directories..."
-mkdir -p "${VOLUME_PATH}/.local/share/pnpm"
-mkdir -p "${VOLUME_PATH}/.npm"
-mkdir -p "${VOLUME_PATH}/.cache/uv"
+mkdir -p "${OPENCLAW_HOME}/.local/share/pnpm"
+mkdir -p "${OPENCLAW_HOME}/.npm"
+mkdir -p "${OPENCLAW_HOME}/.cache/uv"
 
 echo "==> [entrypoint] Starting OpenClaw..."
 exec node openclaw.mjs gateway --allow-unconfigured

@@ -123,6 +123,17 @@ RUN --mount=type=cache,id=openclaw-bookworm-apt-cache,target=/var/cache/apt,shar
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       procps hostname curl git lsof openssl
 
+RUN for attempt in 1 2 3 4 5; do \
+      if curl -LsSf https://astral.sh/uv/install.sh | sh; then \
+        break; \
+      fi; \
+      if [ "$attempt" -eq 5 ]; then \
+        exit 1; \
+      fi; \
+      sleep $((attempt * 2)); \
+    done
+ENV PATH="/root/.local/bin:${PATH}"
+
 RUN chown node:node /app
 
 COPY --from=runtime-assets --chown=node:node /app/dist ./dist
@@ -200,6 +211,9 @@ RUN ln -sf /app/openclaw.mjs /usr/local/bin/openclaw \
 ENV NODE_ENV=production
 ENV NODE_DISABLE_COMPILE_CACHE=1
 ENV OPENCLAW_HOME=/data/openclaw
+ENV UV_CACHE_DIR=/data/openclaw/.cache/uv
+ENV npm_config_cache=/data/openclaw/.npm
+ENV PNPM_HOME=/data/openclaw/.local/share/pnpm
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
